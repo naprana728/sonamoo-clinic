@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>소나무 한의원 경영 관리 시스템 (무설치형)</title>
+  <meta name="description" content="한의원 일일 매출 및 지출 기록, 맞춤형 통계 시각화 및 경영 관리 대시보드 프로그램">
+  <link rel="stylesheet" href="style.css">
+  <!-- Chart.js 연동 (시각화용) -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="app-container">
+    <!-- 헤더 영역 -->
+    <header>
+      <div class="logo-area">
+        <span class="logo-icon">🌿</span>
+        <div class="logo-text">
+          <h1>소나무 한의원 경영 관리</h1>
+          <p>일일 매출·지출 기록 및 통계 시스템 (대안 A: 무설치 웹 버전)</p>
+        </div>
+      </div>
+      <div class="time-area" id="current-time">
+        2026년 06월 07일 (일)
+      </div>
+    </header>
+
+    <!-- 대시보드 통계 카드 영역 -->
+    <section class="dashboard-summary">
+      <div class="summary-card net-profit">
+        <div class="card-title">선택 기간 총매출액</div>
+        <div class="card-value" id="net-profit-val">0원</div>
+        <div class="card-subtext">📈 급여 + 비급여 + 자동차보험 합계</div>
+      </div>
+      <div class="summary-card revenue">
+        <div class="card-title">선택 기간 총급여 매출</div>
+        <div class="card-value" id="total-revenue-val">0원</div>
+        <div class="card-subtext">🏥 건강보험 적용 급여 진료비</div>
+      </div>
+      <div class="summary-card ratio">
+        <div class="card-title">선택 기간 총비급여 매출</div>
+        <div class="card-value" id="expense-ratio-val">0원</div>
+        <div class="card-subtext">💊 첩약, 약침, 추나, 기타 비급여 합계</div>
+      </div>
+      <div class="summary-card expense">
+        <div class="card-title">선택 기간 총지출액</div>
+        <div class="card-value" id="total-expense-val">0원</div>
+        <div class="card-subtext">📉 인건비, 약재비, 임대료 등 합계</div>
+      </div>
+    </section>
+
+    <!-- 메인 콘텐츠 영역 (2단 레이아웃) -->
+    <main class="main-grid">
+      <!-- 왼쪽: 입력 폼 카드 -->
+      <aside class="entry-card">
+        <h2 class="section-title">일일 거래 기록 등록 <span class="badge">입력</span></h2>
+        
+        <!-- 거래 구분 스위치 -->
+        <div class="type-switcher">
+          <button type="button" class="type-btn active" data-type="revenue" id="type-revenue-btn">📈 매출 등록</button>
+          <button type="button" class="type-btn" data-type="expense" id="type-expense-btn">📉 지출 등록</button>
+        </div>
+
+        <form id="transaction-form">
+          <!-- 날짜 입력 -->
+          <div class="form-group">
+            <label for="transaction-date">날짜</label>
+            <input type="date" id="transaction-date" class="form-control" required>
+          </div>
+
+          <!-- 대분류 선택 (매출일 때만 활성화) -->
+          <div class="form-group" id="main-category-group">
+            <label for="main-category">대분류</label>
+            <select id="main-category" class="form-control">
+              <option value="급여 매출">급여 매출</option>
+              <option value="비급여 매출">비급여 매출</option>
+              <option value="자동차보험">자동차보험</option>
+            </select>
+          </div>
+
+          <!-- 소분류 선택 (대분류에 따라 동적 변경) -->
+          <div class="form-group" id="sub-category-group">
+            <label for="sub-category">상세 분류(소분류)</label>
+            <select id="sub-category" class="form-control" required>
+              <!-- JS에서 동적으로 채워짐 -->
+            </select>
+          </div>
+
+          <!-- 금액 입력 -->
+          <div class="form-group">
+            <label for="transaction-amount">금액 (원)</label>
+            <input type="text" id="transaction-amount" class="form-control text-right" placeholder="0" required>
+          </div>
+
+          <!-- 메모 입력 -->
+          <div class="form-group">
+            <label for="transaction-memo">메모 (선택사항)</label>
+            <input type="text" id="transaction-memo" class="form-control" placeholder="예: 홍길동 첩약 1재, 약침용 주사기 주문 등">
+          </div>
+
+          <!-- 등록 버튼 -->
+          <button type="submit" class="btn" id="submit-btn">💾 기록 저장</button>
+        </form>
+      </aside>
+
+      <!-- 오른쪽: 통계 차트 및 목록 리스트 -->
+      <section class="content-area">
+        
+        <!-- 상단 차트 시각화 영역 (3종 차트 배치) -->
+        <div class="charts-grid" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));">
+          <!-- 차트 1: 전체 매출 중 '급여 vs 비급여' 비율 -->
+          <div class="chart-card">
+            <h3 class="section-title">📊 매출 구성 (급여 vs 비급여)</h3>
+            <div class="chart-wrapper">
+              <canvas id="revenue-type-chart"></canvas>
+            </div>
+          </div>
+          
+          <!-- 차트 2: 비급여 항목별(첩약/약침/추나 등) 수익 비중 -->
+          <div class="chart-card">
+            <h3 class="section-title">📊 비급여 세부 비중</h3>
+            <div class="chart-wrapper">
+              <canvas id="non-benefit-chart"></canvas>
+            </div>
+          </div>
+
+          <!-- 차트 3: 매출 대비 지출 비교 바 차트 -->
+          <div class="chart-card">
+            <h3 class="section-title">📊 매출 vs 지출 규모 비교</h3>
+            <div class="chart-wrapper">
+              <canvas id="comparison-bar-chart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- 하단: 거래 내역 목록 및 기간 달력 필터 -->
+        <div class="list-card">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+            <h2 class="section-title" style="margin-bottom: 0;">📜 거래 상세 내역</h2>
+            
+            <!-- 필터 영역 (시작일~종료일 달력 선택기) -->
+            <div class="filter-bar">
+              <div class="filter-group">
+                <label for="filter-start-date">시작일</label>
+                <input type="date" id="filter-start-date" class="filter-control">
+              </div>
+              <div class="filter-group">
+                <label for="filter-end-date">종료일</label>
+                <input type="date" id="filter-end-date" class="filter-control">
+              </div>
+              <div class="filter-group">
+                <label for="filter-type">구분</label>
+                <select id="filter-type" class="filter-control">
+                  <option value="all">전체</option>
+                  <option value="revenue">매출만</option>
+                  <option value="expense">지출만</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- 거래 테이블 -->
+          <div class="table-wrapper">
+            <table id="transaction-table">
+              <thead>
+                <tr>
+                  <th>날짜</th>
+                  <th>구분</th>
+                  <th>대분류</th>
+                  <th>상세 분류</th>
+                  <th class="text-right">금액</th>
+                  <th>메모</th>
+                  <th class="text-center" style="width: 60px;">관리</th>
+                </tr>
+              </thead>
+              <tbody id="transaction-list-body">
+                <!-- JS에서 동적으로 테이블 행 추가 -->
+              </tbody>
+            </table>
+          </div>
+          <!-- 데이터가 없을 때 표시할 영역 -->
+          <div id="empty-state" class="empty-state">
+            <div class="empty-icon">📂</div>
+            <p>선택된 기간에 등록된 거래 내역이 없습니다.</p>
+          </div>
+        </div>
+
+        <!-- 신설: 🗑️ 삭제된 내역 및 복구 (휴지통/삭제 로그) -->
+        <div class="list-card" style="border-color: var(--accent-red-light); background: rgba(229, 62, 62, 0.01);">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+            <h2 class="section-title" style="margin-bottom: 0; color: var(--accent-red);">🗑️ 삭제된 내역 (잘못 입력된 기록)</h2>
+            <button type="button" class="btn btn-secondary" id="clear-trash-btn" style="width: auto; font-size: 0.8rem; color: var(--accent-red); border-color: var(--accent-red); padding: 0.4rem 1rem;">
+              🗑️ 삭제 기록 전체 비우기
+            </button>
+          </div>
+          
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>구분/날짜</th>
+                  <th>상세 분류</th>
+                  <th class="text-right">금액</th>
+                  <th>메모</th>
+                  <th>삭제 일시</th>
+                  <th class="text-center" style="width: 140px;">관리</th>
+                </tr>
+              </thead>
+              <tbody id="deleted-list-body">
+                <!-- JS에서 동적으로 삭제된 행 추가 -->
+              </tbody>
+            </table>
+          </div>
+          
+          <div id="deleted-empty-state" class="empty-state">
+            <div class="empty-icon" style="opacity: 0.5;">🗑️</div>
+            <p>삭제된 거래 기록이 없습니다.</p>
+          </div>
+        </div>
+
+        <!-- 설정 카드 (백업/복원) -->
+        <div class="settings-card">
+          <h3 class="section-title">⚙️ 데이터 백업 및 복원</h3>
+          <p style="font-size: 0.85rem; color: var(--text-secondary);">
+            등록한 모든 정보는 브라우저 로컬 저장소에 안전하게 자동 저장됩니다. 다른 PC로 데이터를 옮기거나 기기 초기화 시에는 백업 파일을 내보낸 후 복원해 주세요. (삭제 내역 로그도 함께 백업됩니다.)
+          </p>
+          <div class="settings-actions">
+            <button type="button" class="btn btn-secondary" id="export-btn">📥 백업 파일 내보내기 (.json)</button>
+            <button type="button" class="btn btn-secondary" id="import-trigger-btn">📤 백업 파일 가져오기</button>
+            <input type="file" id="import-file-input" accept=".json">
+          </div>
+        </div>
+
+      </section>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

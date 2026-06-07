@@ -1,0 +1,591 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Outfit:wght@300;400;500;600;700&display=swap');
+
+/* 테마 변수 정의 (기본값: 라이트 모드) */
+:root {
+  --font-ko: 'Noto Sans KR', sans-serif;
+  --font-en: 'Outfit', sans-serif;
+
+  /* 라이트 모드 컬러 스키마 */
+  --bg-primary: hsl(40, 30%, 97%);
+  --bg-secondary: hsl(0, 0%, 100%);
+  --bg-tertiary: hsl(40, 20%, 92%);
+  --text-primary: hsl(140, 35%, 15%);
+  --text-secondary: hsl(140, 15%, 40%);
+  --text-muted: hsl(140, 10%, 60%);
+  
+  --accent-green: hsl(140, 35%, 28%);
+  --accent-green-hover: hsl(140, 35%, 22%);
+  --accent-green-light: hsl(140, 30%, 92%);
+  
+  --accent-gold: hsl(35, 45%, 45%);
+  --accent-gold-hover: hsl(35, 45%, 38%);
+  --accent-gold-light: hsl(35, 40%, 92%);
+
+  --accent-red: hsl(5, 60%, 52%);
+  --accent-red-hover: hsl(5, 60%, 45%);
+  --accent-red-light: hsl(5, 50%, 93%);
+
+  --accent-blue: hsl(212, 65%, 48%);
+  --accent-blue-hover: hsl(212, 65%, 40%);
+  --accent-blue-light: hsl(212, 60%, 93%);
+
+  --border-color: hsl(140, 15%, 86%);
+  --border-color-focus: hsl(140, 35%, 50%);
+  
+  --card-shadow: 0 10px 30px rgba(45, 60, 48, 0.05);
+  --input-shadow: 0 2px 8px rgba(45, 60, 48, 0.03);
+  --border-radius-sm: 8px;
+  --border-radius-md: 16px;
+  --border-radius-lg: 24px;
+  
+  --transition-fast: 0.2s ease;
+  --transition-normal: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 다크 모드 컬러 스키마 */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-primary: hsl(140, 22%, 8%);
+    --bg-secondary: hsl(140, 18%, 12%);
+    --bg-tertiary: hsl(140, 15%, 16%);
+    --text-primary: hsl(40, 25%, 92%);
+    --text-secondary: hsl(140, 10%, 70%);
+    --text-muted: hsl(140, 8%, 50%);
+    
+    --accent-green: hsl(140, 30%, 45%);
+    --accent-green-hover: hsl(140, 30%, 52%);
+    --accent-green-light: hsl(140, 25%, 16%);
+    
+    --accent-gold: hsl(35, 45%, 58%);
+    --accent-gold-hover: hsl(35, 45%, 65%);
+    --accent-gold-light: hsl(35, 30%, 16%);
+
+    --accent-red: hsl(5, 70%, 62%);
+    --accent-red-hover: hsl(5, 70%, 68%);
+    --accent-red-light: hsl(5, 40%, 16%);
+
+    --accent-blue: hsl(212, 70%, 60%);
+    --accent-blue-hover: hsl(212, 70%, 66%);
+    --accent-blue-light: hsl(212, 40%, 16%);
+
+    --border-color: hsl(140, 12%, 22%);
+    --border-color-focus: hsl(140, 30%, 45%);
+    
+    --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    --input-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  }
+}
+
+/* 기본 스타일 초기화 */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-ko);
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.6;
+  min-height: 100vh;
+  transition: background-color var(--transition-normal), color var(--transition-normal);
+}
+
+/* 유틸리티 클래스 */
+.en-font {
+  font-family: var(--font-en);
+}
+
+.text-right {
+  text-align: right;
+}
+
+.text-center {
+  text-align: center;
+}
+
+/* 레이아웃 */
+.app-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+}
+
+/* 헤더 */
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.logo-area {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.logo-icon {
+  font-size: 2.2rem;
+  color: var(--accent-green);
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+}
+
+.logo-text h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  color: var(--text-primary);
+}
+
+.logo-text p {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.time-area {
+  font-family: var(--font-en);
+  font-weight: 500;
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  background: var(--bg-secondary);
+  padding: 0.5rem 1rem;
+  border-radius: var(--border-radius-sm);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--input-shadow);
+}
+
+/* 대시보드 그리드 */
+.dashboard-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+
+.summary-card {
+  background: var(--bg-secondary);
+  border-radius: var(--border-radius-md);
+  padding: 1.5rem;
+  box-shadow: var(--card-shadow);
+  border: 1px solid var(--border-color);
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+  position: relative;
+  overflow: hidden;
+}
+
+.summary-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+}
+
+.summary-card.net-profit::before { background-color: var(--accent-green); }
+.summary-card.revenue::before { background-color: var(--accent-blue); }
+.summary-card.expense::before { background-color: var(--accent-red); }
+.summary-card.ratio::before { background-color: var(--accent-gold); }
+
+.summary-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 14px 35px rgba(45, 60, 48, 0.08);
+}
+
+.card-title {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-bottom: 0.5rem;
+}
+
+.card-value {
+  font-size: 1.8rem;
+  font-weight: 700;
+  font-family: var(--font-en);
+  color: var(--text-primary);
+}
+
+.card-subtext {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-top: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+/* 메인 그리드 분할 (기록 영역 + 시각화 및 내역) */
+.main-grid {
+  display: grid;
+  grid-template-columns: 380px 1fr;
+  gap: 2rem;
+  align-items: start;
+}
+
+@media (max-width: 1024px) {
+  .main-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* 섹션 타이틀 */
+.section-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 1.2rem;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.section-title span.badge {
+  font-size: 0.75rem;
+  background: var(--accent-green-light);
+  color: var(--accent-green);
+  padding: 0.2rem 0.6rem;
+  border-radius: 20px;
+  font-weight: 600;
+}
+
+/* 입력 카드 */
+.entry-card {
+  background: var(--bg-secondary);
+  border-radius: var(--border-radius-md);
+  padding: 1.8rem;
+  border: 1px solid var(--border-color);
+  box-shadow: var(--card-shadow);
+  position: sticky;
+  top: 1.5rem;
+}
+
+/* 거래 타입 스위치 (매출/지출) */
+.type-switcher {
+  display: flex;
+  background: var(--bg-primary);
+  padding: 0.3rem;
+  border-radius: var(--border-radius-sm);
+  margin-bottom: 1.5rem;
+  border: 1px solid var(--border-color);
+}
+
+.type-btn {
+  flex: 1;
+  background: none;
+  border: none;
+  padding: 0.6rem 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all var(--transition-fast);
+}
+
+.type-btn.active {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.type-btn[data-type="revenue"].active {
+  color: var(--accent-blue);
+  background: var(--bg-secondary);
+}
+
+.type-btn[data-type="expense"].active {
+  color: var(--accent-red);
+  background: var(--bg-secondary);
+}
+
+/* 양식 요소 */
+.form-group {
+  margin-bottom: 1.2rem;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-bottom: 0.4rem;
+}
+
+.form-control {
+  width: 100%;
+  padding: 0.75rem 0.9rem;
+  font-size: 0.95rem;
+  font-family: inherit;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-sm);
+  color: var(--text-primary);
+  outline: none;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.form-control:focus {
+  border-color: var(--border-color-focus);
+  box-shadow: 0 0 0 3px var(--accent-green-light);
+}
+
+select.form-control {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%23718096' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' class='lucide lucide-chevron-down'%3E%3Cpath d='m6 9 4-4 4 4' transform='rotate(180 10 7)'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.9rem center;
+  background-size: 1rem;
+  padding-right: 2.5rem;
+}
+
+/* 서브 카테고리(소분류) 컨테이너 */
+.subcategory-container {
+  display: block;
+}
+
+.subcategory-container.hidden {
+  display: none;
+}
+
+/* 버튼 */
+.btn {
+  width: 100%;
+  padding: 0.85rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #fff;
+  background: var(--accent-green);
+  border: none;
+  border-radius: var(--border-radius-sm);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn:hover {
+  background: var(--accent-green-hover);
+}
+
+.btn-secondary {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+}
+
+.btn-secondary:hover {
+  background: var(--border-color);
+}
+
+/* 통계 및 테이블 섹션 */
+.content-area {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+/* 차트 그리드 */
+.charts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.5rem;
+}
+
+.chart-card {
+  background: var(--bg-secondary);
+  border-radius: var(--border-radius-md);
+  padding: 1.5rem;
+  border: 1px solid var(--border-color);
+  box-shadow: var(--card-shadow);
+  min-height: 300px;
+  display: flex;
+  flex-direction: column;
+}
+
+.chart-wrapper {
+  position: relative;
+  flex-grow: 1;
+  width: 100%;
+  height: 220px;
+}
+
+/* 내역 내역 테이블 */
+.list-card {
+  background: var(--bg-secondary);
+  border-radius: var(--border-radius-md);
+  padding: 1.8rem;
+  border: 1px solid var(--border-color);
+  box-shadow: var(--card-shadow);
+}
+
+/* 필터 바 */
+.filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  align-items: center;
+}
+
+.filter-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.filter-group label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.filter-control {
+  padding: 0.5rem 0.8rem;
+  font-size: 0.85rem;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-sm);
+  color: var(--text-primary);
+  outline: none;
+}
+
+/* 테이블 디자인 */
+.table-wrapper {
+  overflow-x: auto;
+  border-radius: var(--border-radius-sm);
+  border: 1px solid var(--border-color);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+th {
+  background: var(--bg-primary);
+  color: var(--text-secondary);
+  font-weight: 600;
+  text-align: left;
+  padding: 0.85rem 1rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+td {
+  padding: 0.85rem 1rem;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-primary);
+}
+
+tr:last-child td {
+  border-bottom: none;
+}
+
+tr:hover td {
+  background: var(--accent-green-light);
+  background-opacity: 0.3;
+}
+
+/* 뱃지 스타일 */
+.badge-type {
+  display: inline-block;
+  padding: 0.2rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 4px;
+}
+
+.badge-type.revenue {
+  background: var(--accent-blue-light);
+  color: var(--accent-blue);
+}
+
+.badge-type.expense {
+  background: var(--accent-red-light);
+  color: var(--accent-red);
+}
+
+.delete-btn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 1.1rem;
+  transition: color var(--transition-fast);
+  padding: 0.2rem;
+}
+
+.delete-btn:hover {
+  color: var(--accent-red);
+}
+
+/* 빈 목록 상태 */
+.empty-state {
+  text-align: center;
+  padding: 3rem 0;
+  color: var(--text-muted);
+}
+
+.empty-icon {
+  font-size: 2.5rem;
+  margin-bottom: 0.8rem;
+}
+
+/* 설정 섹션 (백업 및 데이터 관리) */
+.settings-card {
+  background: var(--bg-secondary);
+  border-radius: var(--border-radius-md);
+  padding: 1.5rem;
+  border: 1px solid var(--border-color);
+  box-shadow: var(--card-shadow);
+  margin-top: 2rem;
+}
+
+.settings-actions {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+}
+
+.settings-actions button {
+  width: auto;
+  padding: 0.6rem 1.2rem;
+  font-size: 0.85rem;
+}
+
+/* 파일 입력 감춤 */
+#import-file-input {
+  display: none;
+}
+
+/* 반응형 모바일 최적화 */
+@media (max-width: 768px) {
+  header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  
+  .time-area {
+    width: 100%;
+    text-align: center;
+  }
+
+  .filter-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filter-group {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
